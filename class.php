@@ -36,6 +36,10 @@ class Field {
             }
         }
     }
+
+    public function GetPos($i, $j) {
+        return $this->cells[$i][$j];
+    }
 }
 
 class Firm {
@@ -52,7 +56,7 @@ class Firm {
     private $price = 0;
     private $wage = 0;
     private $total_costs = 0;
-    private $position = new Point(0, 0);
+    private $position;
 
     // constructor for firm
     public function __construct($colour, $money, $cost, $employees) {
