@@ -5,33 +5,50 @@
     include("class.php");
     echo"hi, nig";
 
-    
+    require 'vendor/autoload.php';
+    use \Firebase\JWT\JWT;
+
+    $error = '';
+    if (isset($_POST['login'])) {
+        $conn = new mysqli("localhost", "root", "", "users");
+
+        if(empty($_POST["email"])){
+            $error = 'Please Enter Email';
+        } else if(empty($_POST["password"])){
+            $error = 'Please Enter Password';
+        } else {
+            $query = "SELECT * FROM user_data WHERE email = ?";
+            $statement = $conn->prepare($query);
+            $statement->execute([$_POST['email']]);
+            $data = $statement->get_result()->fetch_assoc();
+
+            if ($data) {
+                if ($data['password'] == $_POST['password']) {
+                    $key = '38efb7bb5e0eb5b7db47ac4d51b094e1cbc5bd7984402d2cc7616c2588aaa022';
+                    $token = JWT::encode(
+                        array(
+                            'iat'  => time(),
+                            'nbf'  => time(),
+                            'exp'  => time() + 3600,
+                            'data' => array(
+                                'user_id'	=>	$data['user_id'],
+                                'user_name'	=>	$data['user_name']
+                            )
+                        ),
+                        $key,
+                        'HS256'
+                    );
+                    setcookie("token", $token, time() + 3600, "/", "", true, true);
+                    header('location:welcome.php');
+                }
+            } else {
+                $error = "Wrong email or you have not logined";
+            }
+        }
+    }
 ?>
 
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registration form</title>
-</head>
-
-<h1>Hotelling </h1>
-<body>
-    <div><h2>Registration Form</h2></div>
-    <form action="dbtest.php" method="POST">
-        <label for='user'>Name:</label> <br>
-        <input type="text" name="name" id= "name" placeholder="Введите имя пользователя"> <br>
-
-        <label for='email'>Email:</label> <br>
-        <input type="email" name="email" id= "email" placeholder="Введите адрес электронной почты"> <br>
-
-        <input type="submit" name="submit" value="Отправить">
-    </form>
-
-</body>
-</html>
 <!doctype html>
 <html lang="en">
   	<head>
