@@ -3,7 +3,7 @@
     ini_set('display_errors', 1);
 
     include("class.php");
-    echo"hi, nig";
+    echo"hi, niga";
 
     require 'vendor/autoload.php';
     use \Firebase\JWT\JWT;
@@ -32,7 +32,7 @@
                             'exp'  => time() + 3600,
                             'data' => array(
                                 'user_id'	=>	$data['user_id'],
-                                'user_name'	=>	$data['user_name']
+                                'email'	=>	$data['email']
                             )
                         ),
                         $key,
@@ -40,6 +40,8 @@
                     );
                     setcookie("token", $token, time() + 3600, "/", "", true, true);
                     header('location:welcome.php');
+                } else {
+                    $error = "Wrong password";
                 }
             } else {
                 $error = "Wrong email or you have not logined";
