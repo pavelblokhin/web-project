@@ -3,12 +3,20 @@
     ini_set('display_errors', 1);
 
     include("class.php");
-    echo"hi, niga";
+    echo"hi, nigaaaaa";
 
     require 'vendor/autoload.php';
     use \Firebase\JWT\JWT;
+    use \Firebase\JWT\Key;
 
+    $key = '38efb7bb5e0eb5b7db47ac4d51b094e1cbc5bd7984402d2cc7616c2588aaa022';
+
+    $message = '';
     $error = '';
+
+    // if(isset($_GET['token'])) {
+    //     $decoded = JWT::decode($_GET['token'], new Key($key, 'HS256'));
+    // }
     if (isset($_POST['login'])) {
         $conn = new mysqli("localhost", "root", "", "users");
 
@@ -24,7 +32,7 @@
 
             if ($data) {
                 if ($data['password'] == $_POST['password']) {
-                    $key = '38efb7bb5e0eb5b7db47ac4d51b094e1cbc5bd7984402d2cc7616c2588aaa022';
+                    
                     $token = JWT::encode(
                         array(
                             'iat'  => time(),
@@ -32,7 +40,8 @@
                             'exp'  => time() + 3600,
                             'data' => array(
                                 'user_id'	=>	$data['user_id'],
-                                'email'	=>	$data['email']
+                                'email'	=>	$data['email'],
+                                'name'  =>  $data['name']
                             )
                         ),
                         $key,
@@ -90,6 +99,7 @@
 			    				</div>
 			    				<div class="text-center">
 			    					<input type="submit" name="login" class="btn btn-primary" value="Login" />
+                                    <a href="register.php"><input type="button" name="signup" class="btn btn-link" value="Sing up"></a>
 			    				</div>
 		    				</form>
 		    			</div>
