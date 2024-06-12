@@ -23,6 +23,12 @@
     $statement->bindParam(2, $user_id, PDO::PARAM_STR);
     $statement->execute();
 
+    $query2 = "INSERT INTO players_data (game_id, player1_id) VALUES (?, ?)";
+    $statement2 = $conn->prepare($query2);
+    $statement2->bindParam(1, $game_id, PDO::PARAM_STR);
+    $statement2->bindParam(2, $user_id, PDO::PARAM_STR);
+    $statement2->execute();
+
     $_SESSION['game_id'] = $game_id;
     header("location:game.php?game_id=".$game_id);
 ?>

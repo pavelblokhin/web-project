@@ -16,7 +16,6 @@
     }
     $user_id = $decoded->data->user_id;
     $game_id = uniqid();
-    echo"0";
 
     if (isset($_POST['game_id'])) {
         $game_id = $_POST['game_id'];
@@ -24,12 +23,11 @@
         $statement = $conn->prepare($query);
         $statement->bindParam(1, $game_id, PDO::PARAM_STR);
         $statement->execute();
-        echo"1";
 
         // проверяем что игра с нашем id создана
         if ($statement->rowCount() > 0) {
             $result = $statement->fetch(PDO::FETCH_ASSOC);
-            echo"2";
+            // проверяем что игра не заполнена
             if ($result['player2_id'] == 0) {
                 $_SESSION['game_id'] = $game_id;
                 $joinQuery = "UPDATE games SET player2_id = ? WHERE game_id = ?";
@@ -37,9 +35,14 @@
                 $joinStatement->bindParam(1, $user_id, PDO::PARAM_STR);
                 $joinStatement->bindParam(2, $game_id, PDO::PARAM_STR);
                 $joinStatement->execute();
-                echo"3";
 
-                $_SESSION['game_id'] = $game_id;
+                $query2 = "UPDATE players_data SET player2_id = ? WHERE game_id = ?";
+                $statement2 = $conn->prepare($query2);
+                $statement2->bindParam(1, $user_id, PDO::PARAM_STR);
+                $statement2->bindParam(2, $game_id, PDO::PARAM_STR);
+                $statement2->execute();
+                
+                // переходим на страницу игры
                 header("Location:game.php?game_id=".$game_id);
             } else {
                 echo"Игра заполнена";

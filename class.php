@@ -22,25 +22,6 @@ class Point {
     }
 }
 
-class Field {
-    private $width; // Ширина поля
-    private $height; // Высота пол
-    private $cells; // массив клеток
-
-    public function __construct($width, $height) {
-        $this->width = $width;
-        $this->height = $height;
-        for ($i = 0; $i < $height; $i++) {
-            for ($j = 0; $j < $width; $j++) {
-                $this->cells[$i][$j] = new Point($i, $j);
-            }
-        }
-    }
-
-    public function GetPos($i, $j) {
-        return $this->cells[$i][$j];
-    }
-}
 
 class Firm {
     public $colour; // choose the team (read or blue)
