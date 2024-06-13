@@ -11,6 +11,7 @@
     }
 
     $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
+    
     $key = '38efb7bb5e0eb5b7db47ac4d51b094e1cbc5bd7984402d2cc7616c2588aaa022';
     if (isset($_COOKIE['token'])) {
         $decoded = JWT::decode($_COOKIE['token'], new Key($key, 'HS256'));
@@ -19,6 +20,9 @@
     }
     $user_id = $decoded->data->user_id;
     $_SESSION['user_id'] = $user_id;
+
+    $cells = [];
+
 
 ?>
 
@@ -56,6 +60,9 @@
         .cell.opponent {
             background-color: red;
         }
+        .cell.buyer {
+            background-color: greenyellow;
+        }
     </style>
 
     <script
@@ -88,6 +95,12 @@
                         <button onclick="window.location.href='welcome.php'">Выйти из игры</button>
                         </div>
                     </div>
+
+                    <!-- <div class='row mb-3'>
+                        <div class='col'>
+                        <button >Начать новую игру</button>
+                        </div>
+                    </div> -->
 
                 </div>
             </div>
@@ -133,14 +146,19 @@
                                 updateCells(response);
                                 setTimeout(function() {
                                     resetGameForNewRound();  // Сбрасываем состояние игры через 3 секунды
+                                    if (<?php echo json_encode($user_id); ?> == response.player1_id) {
+                                        generateAndSaveCells();
+                                    } else if (<?php echo json_encode($user_id); ?> == response.player2_id) {
+                                        setTimeout(function() {
+                                            getAndDisplayCells();
+                                        }, 5000);
+                                    }
                                 }, 3000);
                             } else if (response.player1_ready && !response.player2_ready) {
                                 $('#status').text('Ожидание номер 2 игрока...');
                             } else if (!response.player1_ready && response.player2_ready) {
                                 $('#status').text('Ожидание номер 1 игрока...');
                             }
-                            
-                            // updateCells(response.cells);
                         }, 
                         error: function(xhr, status, error) {
                             console.error("Status: " + status);
@@ -206,6 +224,64 @@
                 }
             });
 
+            // функция для создания покупателей
+            function generateAndSaveCells() {
+                $.ajax({
+                    url: 'generate_and_save_cells.php',
+                    method: 'POST',
+                    data: {
+                        game_id: <?php echo json_encode($game_id); ?>,
+                        action: 'generate'
+                    },
+                    success: function(response) {
+                        let res = JSON.parse(response);
+                        if (res.status === 'success') {
+                            updateCellsWithBuyers(res.cells);
+                        } else {
+                            alert('Ошибка: ' + res.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Status: " + status);
+                        console.error("Error: " + error);
+                        console.error("Response Text: " + xhr.responseText);
+                        alert('Произошла ошибка: ' + error);
+                    }
+                });
+            }
+
+            // функция для получения покупателей из таблицы
+            function getAndDisplayCells() {
+                $.ajax({
+                    url: 'get_random_cells.php',
+                    method: 'GET',
+                    data: {
+                        game_id: <?php echo json_encode($game_id); ?>
+                    },
+                    success: function(response) {
+                        let res = JSON.parse(response);
+                        if (res.status === 'success') {
+                            updateCellsWithBuyers(res.cells);
+                        } else {
+                            alert('Ошибка: ' + res.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Status: " + status);
+                        console.error("Error: " + error);
+                        console.error("Response Text: " + xhr.responseText);
+                        alert('Произошла ошибка: ' + error);
+                    }
+                });
+            }
+
+            // функция для расстановки покупателей по полю
+            function updateCellsWithBuyers(buyers) {
+                $('.cell').removeClass('buyer').text('');
+                buyers.forEach(function(cell) {
+                    $('.cell[data-x="' + cell.x + '"][data-y="' + cell.y + '"]').addClass('buyer').text(cell.buyers);
+                });
+            }
             
 
             // поля для клеток, улучишение фирмы и тд
@@ -228,7 +304,7 @@
             // Функция для обновления клеток
             function updateCells(response) {
                     // Очистка старого состояния клеток
-                    $('.cell').removeClass('player opponent selected');
+                    $('.cell').removeClass('player opponent selected buyer');
 
                     if (response.player1_id === <?php echo json_encode($user_id); ?>) {
                         $('.cell[data-x="' + response.x1 + '"][data-y="' + response.y1 + '"]').addClass('player');
