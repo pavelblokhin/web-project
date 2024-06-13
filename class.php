@@ -29,36 +29,72 @@ class Firm {
 
     // there are variables for game
 
-    private $guantity = 0;
+    private $quantity = 0;
     private $price = 0;
-    private $total_costs = 0;
-    private $position;
+    private $profit = 0;
 
     // constructor for firm
-    public function __construct($colour, $money, $cost, $employees) {
+    public function __construct($money, $cost) {
         $this->money = $money;
         $this->cost = $cost;
-        $this->guantity = 0;
+        $this->quantity = 0;
         $this->price = 0;
+        $this->profit = 0;
     }
 
     // functions to upgrade the firm
 
-    public function UpGradeFunc($price) {
-        $this->cost -= 1; // доработать коэф!
-        $this->money -= $price;
-        $this->total_costs += $price;
+    public function UpGradeFunc($times) {
+        $this->cost -= 3 * $times;
+        $this->money -= 100 * $times;
     }
 
-
-    // functions for the game
-
-    public function CountCosts() {
-        $this->total_costs += $this->guantity * $this->cost;
-    }
-
+    // выбрать нужное количество товара
     public function Produce($cnt) {
-        $this->guantity = $cnt;
+        if ($cnt * $this->cost <= $this->money) {
+            $this->quantity = $cnt;
+            $this->money -= $cnt * $this->cost;
+        } else {
+            $this->quantity = floor($this->money / $this->cost);
+            $this->money -= floor($this->money / $this->cost) * $this->cost;
+        }
+        
+    }
+
+    public function Buy($cnt) {
+        if ($cnt <= $this->quantity) {
+            $this->profit = $cnt * $this->price - $this->quantity * $this->cost;
+            $this->quantity -= $cnt;
+            $this->money += $cnt * $this->price;
+        } else {
+            $this->profit = $this->quantity * ($this->price - $this->cost);
+            $this->money += $this->quantity * $this->price;
+            $this->quantity = 0;
+        }
+    }
+
+    public function SetPrice($price) {
+        $this->price = $price;
+    }
+
+    public function GetQuantity() {
+        return $this->quantity;
+    }
+
+    public function GetPrice() {
+        return $this->price;
+    }
+
+    public function GetMoney() {
+        return $this->money;
+    }
+
+    public function GetCost() {
+        return $this->cost;
+    }
+
+    public function GetProfit() {
+        return $this->profit;
     }
 }
 ?>

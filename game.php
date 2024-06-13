@@ -22,9 +22,14 @@
     $user_id = $decoded->data->user_id;
     $_SESSION['user_id'] = $user_id;
 
-    $cells = [];
-
-
+    // если фирма не создана, то создаём класс фирмы
+    if (!isset($_SESSION['player_firm'])) {
+        $player_firm = new Firm(1000, 50);
+        $_SESSION['player_firm'] = serialize($player_firm);
+    } else {
+        // Иначе извлекаем объект из сессии
+        $player_firm = unserialize($_SESSION['player_firm']);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -53,16 +58,22 @@
             cursor: pointer;
         }
         .cell.selected {
-            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjRqmZN2lqXOUsJFUKoB_EgY2mjQv9WEgyH_Uv91HTB5e5Xp-NPvxLpBbMosv9V5wuWUg&usqp=CAU'); /* Путь к вашему изображению */
+            background: url('https://www.pikpng.com/pngl/m/9-99413_contact-us-icon-set-contact-icons-vector-free.png');
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
         }
         .cell.player {
-            background-color: blue;
+            background-image: url('https://www.clipartmax.com/png/middle/76-767781_smart-car-blue-house-png-icon.png'); 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .cell.opponent {
-            background-color: red;
+            background-image: url('https://www.clipartmax.com/png/middle/207-2078968_home-icon-png-red.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .cell.buyer {
             background-color: greenyellow;
@@ -96,7 +107,9 @@
 
                     <div class='row mb-3'>
                         <div class='col'>
-                        <button onclick="window.location.href='welcome.php'">Выйти из игры</button>
+                            <form method="POST" action="exit.php">
+                                <button type="submit" name="exit" class="btn btn-primary">Выйти из игры</button>
+                            </form>
                         </div>
                     </div>
 
@@ -119,13 +132,18 @@
         <!-- Поля ввода и кнопки для улучшения фирмы -->
         <div>
             <div>
-                <input type="number" class="upgrade-value" id="upgrade-value-1" value="0">
-                <button class="upgrade" data-type="1">Улучшить Фирму (Тип 1)</button>
+                <input type="number" class="upgrade-value" id="upgrade-value-produce" value="0">
+                <label for="upgrade-value-produce">Произвести х товаров</label>
             </div>
             <div>
-                <input type="number" class="upgrade-value" id="upgrade-value-2" value="0">
-                <button class="upgrade" data-type="2">Улучшить Фирму (Тип 2)</button>
+                <input type="number" class="upgrade-value" id="upgrade-value-price" value="0">
+                <label for="upgrade-value-price">Поставить за них цену</label>
             </div>
+            <div>
+                <input type="number" class="upgrade-value" id="upgrade-value-cost" value="0">
+                <label for="upgrade-value-cost">Уменшить издержки, цена за улучшение = 100</label>
+            </div>
+            <button id="confirm-upgrade">Подтвердить изменения</button>
         </div>
         
         <!-- код для обработки состояния игры -->
@@ -170,7 +188,7 @@
                 // ставим интервал проверки 5 секунд
                 setInterval(checkGameState, 2000);
 
-
+                // кнопка для завершения хода
                 $('button.readyButton').on('click', function() {
                     $.ajax({
                         method: 'POST',
@@ -279,6 +297,22 @@
                 buyers.forEach(function(cell) {
                     $('.cell[data-x="' + cell.x + '"][data-y="' + cell.y + '"]').addClass('buyer').text(cell.buyers);
                 });
+
+                // считаем прибыль фирм
+                $.ajax({
+                    url: 'count_profit.php',
+                    method: 'POST',
+                    data: {
+                        game_id: <?php echo json_encode($game_id); ?>,
+                        user_id: <?php echo json_encode($user_id); ?>
+                    },
+                    success: function(response) {
+                        let res = JSON.parse(response);
+                        if (res.status === 'success') {
+
+                        }
+                    }
+                });
             }
             
 
@@ -319,6 +353,7 @@
                     
                 }
 
+            // проверка кнопки подтвердить клетку    
             $('#confirm-cell').on('click', function() {
                 if (select_cell !== null) { // Проверка, что клетка выбрана
                     $.ajax({
@@ -357,28 +392,41 @@
                 }
             });
 
+            // запрос для улучшения фирмы
+            $('#confirm-upgrade').on('click', function() {
+                let produceValue = $('#upgrade-value-produce').val();
+                let priceValue = $('#upgrade-value-price').val();
+                let upgradeCost = $('#upgrade-value-cost').val();
 
-            $('.upgrade').on('click', function() {
-                let upgradeType = $(this).data('type'); // Получение типа улучшения
-                let upgradeValue = $('#upgrade-value-${upgradeType}').val(); // Получение значения улучшения
                 $.ajax({
                     method: 'POST',
                     url: 'upgrade_firm.php', // Отправка запроса на сервер для улучшения фирмы
                     data: { 
                         game_id: <?php echo json_encode($game_id); ?>,
                         user_id: <?php echo json_encode($user_id); ?>, 
-                        upgrade_type: upgradeType,
-                        upgrade_value: upgradeValue
+                        produce_value: produceValue,
+                        price_value: priceValue,
+                        upgrade_cost: upgradeCost
                     },
                     success: function(response) {
-                        let res = JSON.parse(response); // Обработка ответа сервера
-                        if (res.status === 'success') {
-                            alert('Фирма улучшена успешно!');
-                        } else {
-                            alert('Ошибка: ' + res.message);
+                        console.log("Raw response:", response);
+                        try {
+                            let res = JSON.parse(response); // Обработка ответа сервера
+                            if (res.status === 'success') {
+                                alert('Фирма улучшена успешно!');
+                            } else {
+                                alert('Ошибка: ' + res.message);
+                            }
+                        } catch (e) {
+                            console.error("Parsing error:", e);
+                            console.error("Response Text:", response);
+                            alert('Ошибка парсинга ответа сервера');
                         }
                     },
                     error: function(xhr, status, error) {
+                        console.error("Status: " + status);
+                        console.error("Error: " + error);
+                        console.error("Response Text: " + xhr.responseText);
                         alert('Произошла ошибка: ' + error);
                     }
                 });

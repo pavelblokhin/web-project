@@ -2,8 +2,6 @@
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 
-    include("class.php");
-    echo"hi, nigaaaaa";
 
     require 'vendor/autoload.php';
     use \Firebase\JWT\JWT;
@@ -14,9 +12,7 @@
     $message = '';
     $error = '';
 
-    // if(isset($_GET['token'])) {
-    //     $decoded = JWT::decode($_GET['token'], new Key($key, 'HS256'));
-    // }
+    // вход в аккаунт
     if (isset($_POST['login'])) {
         $conn = new mysqli("localhost", "root", "", "users");
 
@@ -30,6 +26,7 @@
             $statement->execute([$_POST['email']]);
             $data = $statement->get_result()->fetch_assoc();
 
+            // создание токена на час
             if ($data) {
                 if ($data['password'] == $_POST['password']) {
                     
@@ -99,7 +96,7 @@
 			    				</div>
 			    				<div class="text-center">
 			    					<input type="submit" name="login" class="btn btn-primary" value="Login" />
-                                    <a href="register.php"><input type="button" name="signup" class="btn btn-link" value="Sing up"></a>
+                                    <a href="register.php"><input type="button" name="signup" class="btn btn-link" value="Sing up"></a> <!-- переход на страницу регистрации  -->
 			    				</div>
 		    				</form>
 		    			</div>

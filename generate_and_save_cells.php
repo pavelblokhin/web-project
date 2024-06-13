@@ -11,7 +11,7 @@
         for ($i = 0; $i < $numCells; $i++) {
             $x = rand(1, $gridSize);
             $y = rand(1, $gridSize);
-            $buyers = rand(10, 20);
+            $buyers = rand(1, 5);
             $cells[] = ['x' => $x, 'y' => $y, 'buyers' => $buyers];
         }
         return $cells;

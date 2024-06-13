@@ -13,6 +13,7 @@
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
+        // проверяем id игрока и говорим что он готов
         if ($result['player1_id'] == $user_id) {
             $updateQuery = "UPDATE games SET player1_ready = 1 WHERE game_id = ?";
         } else if ($result['player2_id'] == $user_id) {

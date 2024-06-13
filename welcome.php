@@ -7,6 +7,7 @@
 
     $key = '38efb7bb5e0eb5b7db47ac4d51b094e1cbc5bd7984402d2cc7616c2588aaa022';
 
+    // проверяем токен
     if (isset($_COOKIE['token'])) {
         $decoded = JWT::decode($_COOKIE['token'], new Key($key, 'HS256'));
     } else {
@@ -24,7 +25,7 @@
     	<!-- Bootstrap CSS -->
     	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 
-    	<title>How to Create Login in PHP using JWT Token</title>
+    	<title>Hotteling Game</title>
   	</head>
   	<body>
     	<div class="container">
@@ -71,7 +72,7 @@
                                 </div>                               
                             </div>
                             <div class='col'>
-                                <label class='form-label'>Создать игру</label>
+                                <label class='form-label'>Создать игру (после создания появится id игры)</label>
                                 <div>
                                 <form id=CreateGame method='post' action='create_game.php'>
                                     <button class="btn btn-primary" type="submit">Create</button>

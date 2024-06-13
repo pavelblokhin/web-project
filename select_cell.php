@@ -23,12 +23,10 @@
         $y = $_POST['y'];
 
         // Запрос к базе данных с использованием параметров
-        // $query = "UPDATE players_data SET x = ?, y = ? WHERE game_id = ? AND player_id = ?";
         $statement = $conn->prepare($query);
         $statement->bindParam(1, $x, PDO::PARAM_INT);
         $statement->bindParam(2, $y, PDO::PARAM_INT);
         $statement->bindParam(3, $game_id, PDO::PARAM_STR);
-        // $statement->bindParam(4, $user_id, PDO::PARAM_STR);
 
         // Выполнение запроса и проверка результата
         if ($statement->execute()) {
@@ -40,6 +38,10 @@
         $response = array('status' => 'error', 'message' => 'Координаты не выбраны.');
     }
 
+    $_SESSION['player_point'] = [
+        'x' => $x,
+        'y' => $y
+    ];
     // Возврат ответа в формате JSON
     echo json_encode($response)
 ?>
