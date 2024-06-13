@@ -2,6 +2,7 @@
     $game_id = $_GET['game_id'];
     session_start();
 
+    require_once 'class.php';
     require 'vendor/autoload.php';
     use Firebase\JWT\JWT;
     use Firebase\JWT\Key;
@@ -52,7 +53,10 @@
             cursor: pointer;
         }
         .cell.selected {
-            background-color: yellow;
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjRqmZN2lqXOUsJFUKoB_EgY2mjQv9WEgyH_Uv91HTB5e5Xp-NPvxLpBbMosv9V5wuWUg&usqp=CAU'); /* Путь к вашему изображению */
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
         .cell.player {
             background-color: blue;
@@ -95,12 +99,6 @@
                         <button onclick="window.location.href='welcome.php'">Выйти из игры</button>
                         </div>
                     </div>
-
-                    <!-- <div class='row mb-3'>
-                        <div class='col'>
-                        <button >Начать новую игру</button>
-                        </div>
-                    </div> -->
 
                 </div>
             </div>
