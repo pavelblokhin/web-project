@@ -2,7 +2,7 @@
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 
-
+    require 'db.php';
     require 'vendor/autoload.php';
     use \Firebase\JWT\JWT;
     use \Firebase\JWT\Key;
@@ -14,7 +14,7 @@
 
     // вход в аккаунт
     if (isset($_POST['login'])) {
-        $conn = new mysqli("localhost", "root", "", "users");
+        // $conn = new mysqli("localhost", "root", "", "users");
 
         if(empty($_POST["email"])){
             $error = 'Please Enter Email';
@@ -24,11 +24,11 @@
             $query = "SELECT * FROM user_data WHERE email = ?";
             $statement = $conn->prepare($query);
             $statement->execute([$_POST['email']]);
-            $data = $statement->get_result()->fetch_assoc();
+            $data = $statement->fetch(PDO::FETCH_ASSOC);
 
             // создание токена на час
             if ($data) {
-                if ($data['password'] == $_POST['password']) {
+                if (password_verify($_POST['password'], $data['password'])) {
                     
                     $token = JWT::encode(
                         array(

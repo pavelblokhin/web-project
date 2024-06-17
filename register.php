@@ -2,6 +2,7 @@
 	error_reporting(E_ALL);
 	ini_set('display_errors', 1);
 
+	require 'db.php';
     require 'vendor/autoload.php';
 
     use Firebase\JWT\JWT;
@@ -12,7 +13,7 @@
     $message = '';
 
     if (isset($_POST['register'])) {
-        $conn = new PDO('mysql:dbname=users;host=localhost', 'root', '');
+        // $conn = new PDO('mysql:dbname=users;host=localhost', 'root', '');
 
         // проверяем ввёл ли пользователь email
         if (empty($_POST['email'])) {
@@ -33,10 +34,11 @@
 			    $error = 'Email alaready exists';
             // регестрируем пользователя
 		    } else {
+				$hashed_password = password_hash($_POST['password'], PASSWORD_DEFAULT);
                 $data = array(
 					':name'        => 	trim($_POST['name']),
                     ':email'       =>	trim($_POST['email']),
-				    ':password'    =>	trim($_POST['password']),
+				    ':password'    =>	trim($hashed_password),
                     ':user_id'     =>   trim(md5(microtime(true)))
                 );
                 $InsertQuery = "INSERT INTO user_data (user_id, name, email, password) VALUES (:user_id, :name, :email, :password)";

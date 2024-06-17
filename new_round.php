@@ -1,7 +1,8 @@
 <?php
     session_start();
+    require 'db.php';
 
-    $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
+    // $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
 
     if (isset($_POST['game_id']) && isset($_POST['user_id'])) {
         $game_id = $_POST['game_id'];
@@ -21,7 +22,7 @@
             $updateStatement = $conn->prepare($updateQuery);
             $updateStatement->bindParam(1, $game_id, PDO::PARAM_STR);
             if ($updateStatement->execute()) {
-                $response = array('status' => 'success');
+                $response = array('status' => 'success', 'player1_id' => $result['player1_id']);
             } else {
                 $response = array('status' => 'error', 'message' => 'Не удалось обновить состояние игры');
             }

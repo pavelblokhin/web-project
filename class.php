@@ -52,10 +52,10 @@ class Firm {
     // выбрать нужное количество товара
     public function Produce($cnt) {
         if ($cnt * $this->cost <= $this->money) {
-            $this->quantity = $cnt;
+            $this->quantity += $cnt;
             $this->money -= $cnt * $this->cost;
         } else {
-            $this->quantity = floor($this->money / $this->cost);
+            $this->quantity += floor($this->money / $this->cost);
             $this->money -= floor($this->money / $this->cost) * $this->cost;
         }
         

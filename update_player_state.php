@@ -1,8 +1,10 @@
 <?php
     session_start();
+    require 'db.php';
+
     $game_id = $_SESSION['game_id'];
 
-    $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
+    // $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
 
     if (isset($_POST['user_id'])) {
         $user_id = $_POST['user_id'];

@@ -1,5 +1,6 @@
 <?php
     session_start();
+    require 'db.php';
 
     $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
 
@@ -18,14 +19,16 @@
     }
 
     function deleteOldCells($game_id) {
-        $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
+        global $conn;
+        // $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
         $stmt = $conn->prepare("DELETE FROM game_cells WHERE game_id = :game_id");
         $stmt->bindParam(':game_id', $game_id);
         $stmt->execute();
     }
 
     function saveRandomCells($game_id, $cells) {
-        $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
+        global $conn;
+        // $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
         foreach ($cells as $cell) {
             $stmt = $conn->prepare("INSERT INTO game_cells (game_id, x, y, buyers) VALUES (:game_id, :x, :y, :buyers) ON DUPLICATE KEY UPDATE buyers = :buyers");
             $stmt->bindParam(':game_id', $game_id);

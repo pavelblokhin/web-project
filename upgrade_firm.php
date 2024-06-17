@@ -3,8 +3,9 @@
     ini_set('display_errors', 1);
 
     require_once 'class.php';
+    require 'db.php';
     session_start();
-    $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
+    // $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
 
     
 
@@ -16,11 +17,11 @@
         $upgradeCost = $_POST['upgrade_cost'];
         $player_firm = unserialize($_SESSION['player_firm']);
 
-        $player_firm->Produce($produceValue);
-        $player_firm->SetPrice($priceValue);
         if ($upgradeCost > 0) {
             $player_firm->UpGradeFunc($upgradeCost);
         }
+        $player_firm->Produce($produceValue);
+        $player_firm->SetPrice($priceValue);
 
         // проверяем айди игрока чтобы записать его данные в таблицу
         $query = "SELECT player1_id, player2_id FROM games WHERE game_id = ?";

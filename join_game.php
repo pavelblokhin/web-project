@@ -3,11 +3,13 @@
     error_reporting(E_ALL);
     ini_set('display_errors', 1);
 
+    require_once 'class.php';
+    require 'db.php';
     require 'vendor/autoload.php';
     use Firebase\JWT\JWT;
     use Firebase\JWT\Key;
 
-    $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
+    // $conn = new PDO("mysql:host=localhost;dbname=game_db", "root", "");
     $key = '38efb7bb5e0eb5b7db47ac4d51b094e1cbc5bd7984402d2cc7616c2588aaa022';
     if (isset($_COOKIE['token'])) {
         $decoded = JWT::decode($_COOKIE['token'], new Key($key, 'HS256'));
@@ -30,7 +32,7 @@
             // проверяем что игра не заполнена
             if ($result['player2_id'] == 0) {
                 $_SESSION['game_id'] = $game_id;
-                $joinQuery = "UPDATE games SET player2_id = ? WHERE game_id = ?";
+                $joinQuery = "UPDATE games SET player2_id = ?, player2_ready = 1 WHERE game_id = ?";
                 $joinStatement = $conn->prepare($joinQuery);
                 $joinStatement->bindParam(1, $user_id, PDO::PARAM_STR);
                 $joinStatement->bindParam(2, $game_id, PDO::PARAM_STR);
@@ -43,6 +45,8 @@
                 $statement2->execute();
                 
                 // переходим на страницу игры
+                $player_firm = new Firm(1000, 50);
+                $_SESSION['player_firm'] = serialize($player_firm);
                 header("Location:game.php?game_id=".$game_id);
             } else {
                 echo"Игра заполнена";
