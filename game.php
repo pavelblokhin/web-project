@@ -199,58 +199,17 @@
                 <!-- Данные будут добавлены сюда динамически -->
             </tbody>
         </table>
+
+        <div>Покупатели имеют кредиты = 150</div>
         </div>
 
+        
         </div>
 
 
         </div>
 
 
-        <!-- <h1>Игровое поле</h1>
-        <div id="game-board" class="grid">
-            <?php for ($x = 1; $x < 11; $x++): ?>
-                <?php for ($y = 1; $y < 11; $y++): ?>
-                    <div class="cell" data-x="<?php echo $x; ?>" data-y="<?php echo $y; ?>"></div>
-                <?php endfor; ?>
-            <?php endfor; ?>
-        </div> -->
-
-        <!-- <div id='firm-table'></div>
-        <table id="firmTable">
-            <thead>
-                <tr>
-                    <th>Money</th>
-                    <th>cost</th>
-                    <th>price</th>
-                    <th>quantity</th>
-                    <th>profit</th>
-                    <th>profit_opponent</th>
-                </tr>
-            </thead>
-            <tbody> -->
-                <!-- Данные будут добавлены сюда динамически -->
-            <!-- </tbody>
-        </table> -->
-
-        <!-- Кнопка для подтверждения выбора клетки -->
-        <!-- <button id="confirm-cell">Подтвердить выбор клетки</button> -->
-        <!-- Поля ввода и кнопки для улучшения фирмы -->
-        <!-- <div>
-            <div>
-                <input type="number" class="upgrade-value" id="upgrade-value-produce" value="0">
-                <label for="upgrade-value-produce">Произвести х товаров</label>
-            </div>
-            <div>
-                <input type="number" class="upgrade-value" id="upgrade-value-price" value="0">
-                <label for="upgrade-value-price">Поставить за них цену</label>
-            </div>
-            <div>
-                <input type="number" class="upgrade-value" id="upgrade-value-cost" value="0">
-                <label for="upgrade-value-cost">Уменшить издержки, цена за улучшение = 100</label>
-            </div>
-            <button id="confirm-upgrade">Подтвердить изменения</button>
-        </div> -->
         
         <!-- код для обработки состояния игры -->
         <script>
